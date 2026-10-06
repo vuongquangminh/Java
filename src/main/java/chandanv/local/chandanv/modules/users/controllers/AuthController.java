@@ -1,17 +1,14 @@
 package chandanv.local.chandanv.modules.users.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
 
-import chandanv.local.chandanv.modules.users.services.impl.UserService;
+import chandanv.local.chandanv.modules.users.requests.LoginRequest;
+import chandanv.local.chandanv.modules.users.resources.LoginResource;
 import chandanv.local.chandanv.modules.users.services.interfaces.UserServiceInterface;
-
-import org.springframework.web.bind.annotation.RequestBody;
-
-import chandanv.local.chandanv.modules.users.dtos.LoginRequest;
-import chandanv.local.chandanv.modules.users.dtos.LoginResponse;
 
 
 @RestController 
@@ -27,9 +24,9 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest Loginrequest) {
+    public ResponseEntity<LoginResource> login(@RequestBody LoginRequest Loginrequest) {
         
-        LoginResponse auth = userService.login(Loginrequest);
+        LoginResource auth = userService.login(Loginrequest);
 
         return ResponseEntity.ok(auth);
     }

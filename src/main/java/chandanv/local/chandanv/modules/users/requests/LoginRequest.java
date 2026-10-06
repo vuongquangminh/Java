@@ -1,4 +1,4 @@
-package chandanv.local.chandanv.modules.users.dtos;
+package chandanv.local.chandanv.modules.users.requests;
 
 public class LoginRequest {
     private String email;

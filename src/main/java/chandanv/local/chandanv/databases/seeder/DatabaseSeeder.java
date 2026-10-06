@@ -1,17 +1,20 @@
 package chandanv.local.chandanv.databases.seeder;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
+import chandanv.local.chandanv.modules.users.entities.User;
+import chandanv.local.chandanv.modules.users.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 @Component 
 public class DatabaseSeeder implements CommandLineRunner {
+
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -19,21 +22,22 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserRepository userRepository;
+
+
     @Transactional
     @Override 
     public void run(String... args) throws Exception {
 
         if(isTableEmpty()) {
             String passwordEncoded = passwordEncoder.encode("password");
-            entityManager.createNativeQuery("INSERT INTO users (name, email, password, user_catalogue_id, phone) VALUES (?,?,?,?,?)")
-            .setParameter(1, "Nam Hoang Van")
-            .setParameter(2, "chandanv1010@example.com")
-            .setParameter(3, passwordEncoded)
-            .setParameter(4, 1)
-            .setParameter(5, "0869952231")
-            .executeUpdate();
-            System.out.println("password: " + passwordEncoded);
+
+            User user = new User("Nam Hoang Van", "chandanv1010@example.com", passwordEncoded, 1L, "0869952231");
+            userRepository.save(user);
+            logger.info("Seeding user data");
         }
+
 
     }
 

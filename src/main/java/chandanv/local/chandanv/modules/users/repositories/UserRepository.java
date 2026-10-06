@@ -1,9 +1,10 @@
 package chandanv.local.chandanv.modules.users.repositories;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import chandanv.local.chandanv.modules.users.entities.User;
 
-import chandanv.local.chandanv.repositories.BaseRepository;
 
 @Repository 
-public class UserRepository extends BaseRepository {
-    
+public interface UserRepository extends JpaRepository<User, Long> {
+
 }
