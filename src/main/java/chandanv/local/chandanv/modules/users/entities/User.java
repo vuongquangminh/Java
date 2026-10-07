@@ -1,4 +1,5 @@
 package chandanv.local.chandanv.modules.users.entities;
+
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -10,17 +11,16 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Entity 
+@Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,7 +51,6 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    
     public Long getId() {
         return id;
     }
@@ -62,7 +61,7 @@ public class User {
 
     public Long getUserCatalogueId() {
         return userCatalogueId;
-    }   
+    }
 
     public void setUserCatalogueId(Long userCatalogueId) {
         this.userCatalogueId = userCatalogueId;
@@ -124,6 +123,11 @@ public class User {
         return updatedAt;
     }
 
+    public User() {
+
+    }
+
+    
 
     public User(String name , String email, String password, Long userCatalogueId, String phone) {
         this.name = name;
