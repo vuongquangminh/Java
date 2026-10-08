@@ -7,6 +7,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -35,5 +36,8 @@ public class JwtService {
                 .compact();
     }
 
-
+    public String getUserIdFromJwt(String token){
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return claims.getSubject();
+    }
 }

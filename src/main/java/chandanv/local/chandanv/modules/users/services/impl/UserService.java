@@ -22,6 +22,7 @@ import chandanv.local.chandanv.modules.users.entities.User;
 import chandanv.local.chandanv.modules.users.repositories.UserRepository;
 import chandanv.local.chandanv.services.JwtService;
 
+
 @Service
 public class UserService extends BaseService implements UserServiceInterface {
 
