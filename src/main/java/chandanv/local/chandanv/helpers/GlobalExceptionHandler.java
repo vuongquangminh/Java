@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import chandanv.local.chandanv.resources.ErrorResource;
-import chandanv.local.chandanv.modules.users.entities.User;
 
 import java.util.Map;
 import java.util.HashMap;

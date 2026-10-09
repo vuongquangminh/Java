@@ -47,7 +47,7 @@ public class UserService extends BaseService implements UserServiceInterface {
                 throw new BadCredentialsException("Email hoac mat khau khong chinh xac");
             }
             
-            UserResource userResource = new UserResource(user.getId(), user.getEmail(), user.getName());
+            UserResource userResource = new UserResource(user.getId(), user.getEmail(), user.getName(), user.getPhone());
             String token = jwtService.generateToken(user.getId(), user.getEmail());
 
             return new LoginResource(token, userResource);

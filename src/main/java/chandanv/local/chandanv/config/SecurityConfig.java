@@ -9,7 +9,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import chandanv.local.chandanv.helpers.JwtAuthFilter;
-import lombok.RequiredArgsConstructor;
 
 
 
@@ -35,9 +34,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     //1. Route AUTH - No JWT
                     .requestMatchers("/api/v1/auth/login"
-                    ).permitAll()
-                    //2. Route PUBLIC
-                    .requestMatchers("/api/v1/products"
                     ).permitAll()
                     .anyRequest().authenticated()
             )
