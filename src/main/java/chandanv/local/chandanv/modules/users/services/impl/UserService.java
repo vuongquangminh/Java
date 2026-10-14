@@ -22,7 +22,6 @@ import chandanv.local.chandanv.modules.users.entities.User;
 import chandanv.local.chandanv.modules.users.repositories.UserRepository;
 import chandanv.local.chandanv.services.JwtService;
 
-
 @Service
 public class UserService extends BaseService implements UserServiceInterface {
 
@@ -31,10 +30,10 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Autowired
     private JwtService jwtService;
 
-    @Autowired 
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired 
+    @Autowired
     private UserRepository userRepository;
 
     @Override
@@ -42,23 +41,24 @@ public class UserService extends BaseService implements UserServiceInterface {
         try {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new BadCredentialsException("Email hoac mat khau khong chinh xac"));
-            
-            if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                 throw new BadCredentialsException("Email hoac mat khau khong chinh xac");
             }
-            
+
             UserResource userResource = new UserResource(user.getId(), user.getEmail(), user.getName(), user.getPhone());
             String token = jwtService.generateToken(user.getId(), user.getEmail());
+            String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
-            return new LoginResource(token, userResource);
+            return new LoginResource(token, refreshToken, userResource);
 
         } catch (BadCredentialsException e) {
             logger.error("Loi xac thuc: {}", e.getMessage());
-            
+
             Map<String, String> errors = new HashMap<>();
             errors.put("message", e.getMessage());
             ErrorResource errorResource = new ErrorResource("Co van de xay ra trong qua trinh xax thuc", errors);
             return errorResource;
-        } 
+        }
     }
 }

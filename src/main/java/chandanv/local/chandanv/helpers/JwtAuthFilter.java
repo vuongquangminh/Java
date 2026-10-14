@@ -81,6 +81,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 return;
             }
+
+            if(jwtService.isTokenExpired(jwt)){
+                sendErrorResponse(response,
+                        request,
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "Xac thuc khong thanh cong",
+                        "Token het han"
+                );
+                return;
+            }
+
             if(!jwtService.isSignatureValid(jwt)){
                 sendErrorResponse(response,
                         request,
@@ -99,15 +110,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 return;
             }
-            if(!jwtService.isTokenExpired(jwt)){
-                sendErrorResponse(response,
-                        request,
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "Xac thuc khong thanh cong",
-                        "Token het han"
-                );
-                return;
-            }
+            
             if(jwtService.isBlacklistedToken(jwt)){
                 sendErrorResponse(response,
                         request,

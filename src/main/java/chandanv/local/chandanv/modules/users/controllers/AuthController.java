@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 
 import chandanv.local.chandanv.modules.users.requests.LoginRequest;
+import chandanv.local.chandanv.modules.users.requests.RefreshTokenRequest;
 import chandanv.local.chandanv.modules.users.resources.LoginResource;
 import chandanv.local.chandanv.modules.users.services.interfaces.UserServiceInterface;
 import chandanv.local.chandanv.resources.ErrorResource;
@@ -26,6 +27,7 @@ import chandanv.local.chandanv.resources.MessageResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestHeader;
+import chandanv.local.chandanv.modules.users.resources.TokenResource;
 
 @Validated
 @RestController
@@ -64,16 +66,17 @@ public class AuthController {
     public ResponseEntity<?> addTokenToBlackList(@Valid @RequestBody BlacklistTokenRequest request) {
         try {
             Object result = blacklistService.create(request);
-            return ResponseEntity.ok(result); 
-        
+            return ResponseEntity.ok(result);
+
         } catch (Exception e) {
 
             return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
         }
 
     }
+
     @GetMapping("loggout")
-    public ResponseEntity<?> loggout(@RequestHeader("Authorization") String bearerToken){
+    public ResponseEntity<?> loggout(@RequestHeader("Authorization") String bearerToken) {
         try {
             String token = bearerToken.substring(7);
             BlacklistTokenRequest request = new BlacklistTokenRequest();
@@ -84,5 +87,13 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
         }
+    }
+
+    @PostMapping("refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+        logger.info(refreshToken);
+        
+        return ResponseEntity.ok("test...");
     }
 }

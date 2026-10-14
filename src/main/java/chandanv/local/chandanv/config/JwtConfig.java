@@ -1,10 +1,11 @@
 package chandanv.local.chandanv.config;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JwtConfig {
-    
+
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -12,7 +13,10 @@ public class JwtConfig {
     private long expirationTime;
 
     @Value("${jwt.issuer}")
-    private String issuer; 
+    private String issuer;
+
+    @Value("${jwt.expirationRefreshToken}")
+    private long refreshTokenExpirationTime;
 
     public String getSecretKey() {
         return secretKey;
@@ -22,7 +26,11 @@ public class JwtConfig {
         return expirationTime;
     }
 
-    public String getIssuer(){
+    public String getIssuer() {
         return issuer;
+    }
+
+    public long getRefreshTokenExpirationTime() {
+        return refreshTokenExpirationTime;
     }
 }

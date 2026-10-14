@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 import lombok.Data;
@@ -33,7 +31,7 @@ public class BlacklistedToken {
     private String token; 
 
     @Column(name = "expiry_date", nullable = false)
-    private LocalDateTime expriryDate;
+    private LocalDateTime expiryDate;
 
     @Column(name = "user_id")
     private Long userId;

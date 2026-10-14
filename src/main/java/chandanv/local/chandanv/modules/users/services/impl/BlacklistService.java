@@ -40,7 +40,7 @@ public class BlacklistService {
             BlacklistedToken blacklistedToken = new BlacklistedToken();
             blacklistedToken.setToken(request.getToken());
             blacklistedToken.setUserId(userId);
-            blacklistedToken.setExpriryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            blacklistedToken.setExpiryDate(expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             blacklistedTokenRepository.save(blacklistedToken);
 
             logger.info("them Token vao danh sach blacklist thanh cong ");
