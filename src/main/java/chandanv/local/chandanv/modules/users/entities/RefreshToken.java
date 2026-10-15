@@ -1,4 +1,3 @@
-
 package chandanv.local.chandanv.modules.users.entities;
 
 import java.time.LocalDateTime;
@@ -15,7 +14,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.FetchType;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -44,5 +45,9 @@ public class RefreshToken {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable =false)
+    private User user;
 
 }

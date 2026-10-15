@@ -33,7 +33,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                     //1. Route AUTH - No JWT
-                    .requestMatchers("/api/v1/auth/login"
+                    .requestMatchers("/api/v1/auth/login",
+                    "/api/v1/auth/refresh"
                     ).permitAll()
                     .anyRequest().authenticated()
             )

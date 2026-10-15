@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -61,36 +62,29 @@ public class JwtService {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtConfig.getRefreshTokenExpirationTime());
 
-        String refreshToken = Jwts.builder()
-                .setSubject(String.valueOf(userId))
-                .claim("email", email)
-                .setIssuer(jwtConfig.getIssuer())
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        String refreshToken = UUID.randomUUID().toString();
 
         LocalDateTime localExpiryDate = expiryDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        
+
         Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByUserId(userId);
 
-        if(optionalRefreshToken.isPresent()) {
+        if (optionalRefreshToken.isPresent()) {
             RefreshToken dBRefreshToken = optionalRefreshToken.get();
             dBRefreshToken.setRefreshToken(refreshToken);
             dBRefreshToken.setExpiryDate(localExpiryDate);
             refreshTokenRepository.save(dBRefreshToken);
 
-        }else{
+        } else {
 
             RefreshToken insertToken = new RefreshToken();
             insertToken.setRefreshToken(refreshToken);
             insertToken.setExpiryDate(localExpiryDate);
             insertToken.setUserId(userId);
-    
+
             refreshTokenRepository.save(insertToken);
-            
+
         }
-        
+
         return refreshToken;
     }
 
@@ -119,7 +113,6 @@ public class JwtService {
 
     public boolean isSignatureValid(String token) {
         try {
-            // logger.info(token);
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
@@ -135,16 +128,11 @@ public class JwtService {
     public boolean isTokenExpired(String token) {
         try {
 
-            Claims claims = getAllClaimsFromToken(token);
-            if(claims != null){
-                return claims.getExpiration().after(new Date());
+            Date expiration = getClaimFromToken(token, Claims::getExpiration);
+            return expiration.before(new Date());
 
-            }else{
-                return true;
-            }
-
-        } catch(Exception e) {
-            return false;
+        } catch (Exception e) {
+            return true;
         }
     }
 
@@ -164,7 +152,7 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-            
+
         } catch (ExpiredJwtException e) {
             return null;
         }
@@ -181,12 +169,13 @@ public class JwtService {
 
     public boolean isRefreshTokenValid(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token).orElseThrow(() -> new RuntimeException("RefreshToken khong ton tai"));
 
-            final Date expiration = getClaimFromToken(refreshToken.getRefreshToken(), Claims::getExpiration);
+            LocalDateTime expirationLocalDateTime = refreshToken.getExpiryDate();
+            Date expirationDate = Date.from(expirationLocalDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
-            return expiration.after(new Date());
+            // final Date expiration = refreshToken.getExpiryDate();
+            return expirationDate.after(new Date());
 
         } catch (Exception e) {
             return false;

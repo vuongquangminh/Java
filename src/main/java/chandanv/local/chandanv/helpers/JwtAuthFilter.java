@@ -2,7 +2,6 @@ package chandanv.local.chandanv.helpers;
 
 import java.io.IOException;
 
-
 import java.util.Map;
 import java.util.HashMap;
 
@@ -37,16 +36,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.objectMapper = objectMapper;
     }
 
-
     @Override
     protected boolean shouldNotFilter(
-        @NotNull HttpServletRequest request
+            @NotNull HttpServletRequest request
     ) {
         String path = request.getRequestURI();
-        return path.startsWith("/api/v1/auth/login");
+        return path.startsWith("/api/v1/auth/login") || path.startsWith("/api/v1/auth/refresh");
     }
-
-
 
     @Override
     public void doFilterInternal(
@@ -82,7 +78,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if(jwtService.isTokenExpired(jwt)){
+            logger.info(jwtService.isTokenExpired(jwt));
+            if (jwtService.isTokenExpired(jwt)) {
                 sendErrorResponse(response,
                         request,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -92,7 +89,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if(!jwtService.isSignatureValid(jwt)){
+            if (!jwtService.isSignatureValid(jwt)) {
                 sendErrorResponse(response,
                         request,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -101,7 +98,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 return;
             }
-            if(!jwtService.isIssuerToken(jwt)){
+            if (!jwtService.isIssuerToken(jwt)) {
                 sendErrorResponse(response,
                         request,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -110,8 +107,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 );
                 return;
             }
-            
-            if(jwtService.isBlacklistedToken(jwt)){
+
+            if (jwtService.isBlacklistedToken(jwt)) {
                 sendErrorResponse(response,
                         request,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -126,14 +123,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
 
                 final String emailFromToken = jwtService.getEmailFromJwt(jwt);
-                if(!emailFromToken.equals(userDetails.getUsername())){
+                if (!emailFromToken.equals(userDetails.getUsername())) {
                     sendErrorResponse(response,
-                        request,
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "Xac thuc khong thanh cong",
-                        "User token khong chinh xac"
-                );
-                return;
+                            request,
+                            HttpServletResponse.SC_UNAUTHORIZED,
+                            "Xac thuc khong thanh cong",
+                            "User token khong chinh xac"
+                    );
+                    return;
                 }
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
