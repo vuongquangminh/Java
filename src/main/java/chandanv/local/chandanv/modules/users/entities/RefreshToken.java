@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.FetchType;
 
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -29,7 +30,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "refresh_token", nullable = false, unique = true)
+    @Column(name = "refresh_token", nullable = false, unique = true, columnDefinition="TEXT")
     private String refreshToken;
 
     @Column(name = "expiry_date", nullable = false)

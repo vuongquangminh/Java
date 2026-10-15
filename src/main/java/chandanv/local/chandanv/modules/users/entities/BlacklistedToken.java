@@ -27,7 +27,7 @@ public class BlacklistedToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition="TEXT")
     private String token; 
 
     @Column(name = "expiry_date", nullable = false)

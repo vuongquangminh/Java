@@ -14,6 +14,9 @@ import chandanv.local.chandanv.modules.users.requests.BlacklistTokenRequest;
 import chandanv.local.chandanv.services.JwtService;
 import io.jsonwebtoken.Claims;
 import chandanv.local.chandanv.resources.MessageResource;
+import org.springframework.http.HttpStatus;
+import chandanv.local.chandanv.resources.ApiResource;
+
 
 @Service
 public class BlacklistService {
@@ -30,7 +33,7 @@ public class BlacklistService {
         try {
 
             if (blacklistedTokenRepository.existsByToken(request.getToken())) {
-                return new MessageResource("token da ton tai trong blacklist");
+                return ApiResource.error("TOKEN ERROR", "Token da ton tai", HttpStatus.BAD_REQUEST);
             }
             Claims claims = jwtService.getAllClaimsFromToken(request.getToken());
             Long userId = Long.valueOf(claims.getSubject());

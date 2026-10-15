@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import chandanv.local.chandanv.modules.users.requests.LoginRequest;
@@ -21,6 +22,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import chandanv.local.chandanv.modules.users.entities.User;
 import chandanv.local.chandanv.modules.users.repositories.UserRepository;
 import chandanv.local.chandanv.services.JwtService;
+import chandanv.local.chandanv.resources.ApiResource;
+import org.springframework.http.HttpStatus;
+
+
+
 
 @Service
 public class UserService extends BaseService implements UserServiceInterface {
@@ -36,6 +42,9 @@ public class UserService extends BaseService implements UserServiceInterface {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${jwt.defaultExpiration}")
+    private long defaultExpiration;
+
     @Override
     public Object authenticate(LoginRequest request) {
         try {
@@ -47,7 +56,7 @@ public class UserService extends BaseService implements UserServiceInterface {
             }
 
             UserResource userResource = new UserResource(user.getId(), user.getEmail(), user.getName(), user.getPhone());
-            String token = jwtService.generateToken(user.getId(), user.getEmail());
+            String token = jwtService.generateToken(user.getId(), user.getEmail(), defaultExpiration);
             String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getEmail());
 
             return new LoginResource(token, refreshToken, userResource);
@@ -55,10 +64,7 @@ public class UserService extends BaseService implements UserServiceInterface {
         } catch (BadCredentialsException e) {
             logger.error("Loi xac thuc: {}", e.getMessage());
 
-            Map<String, String> errors = new HashMap<>();
-            errors.put("message", e.getMessage());
-            ErrorResource errorResource = new ErrorResource("Co van de xay ra trong qua trinh xax thuc", errors);
-            return errorResource;
+            return ApiResource.error("AUTH_ERROR", e.getMessage(), HttpStatus.UNAUTHORIZED);
         }
     }
 }

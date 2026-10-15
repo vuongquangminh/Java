@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import chandanv.local.chandanv.services.JwtService;
 import chandanv.local.chandanv.modules.users.repositories.RefreshTokenRepository;
 import chandanv.local.chandanv.modules.users.entities.RefreshToken;
+import chandanv.local.chandanv.resources.ApiResource;
+
+
 
 
 @Validated
@@ -65,10 +68,11 @@ public class AuthController {
         Object result = userService.authenticate(request);
 
         if (result instanceof LoginResource loginResource) {
-            return ResponseEntity.ok(loginResource);
+            ApiResource<LoginResource> response = ApiResource.ok(loginResource , "SUCCESS");
+            return ResponseEntity.ok(response);
         }
 
-        if (result instanceof ErrorResource errorResource) {
+        if (result instanceof ApiResource errorResource) {
             return ResponseEntity.unprocessableEntity().body(errorResource);
         }
 
@@ -95,10 +99,22 @@ public class AuthController {
             BlacklistTokenRequest request = new BlacklistTokenRequest();
             request.setToken(token);
 
-            Object message = blacklistService.create(request);
-            return ResponseEntity.ok(message);
+            blacklistService.create(request);
+
+            ApiResource<Void> response = ApiResource.<Void>builder()
+                .success(true)
+                .message("Dang xuat thanh cong")
+                .status(HttpStatus.OK)
+                .build();
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new MessageResource("Network Error!"));
+            ApiResource<Void> errorResponse = ApiResource.<Void>builder()
+                .success(false)
+                .message("Network Error!")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .build();
+            return ResponseEntity.internalServerError().body(errorResponse);
         }
     }
 
@@ -116,7 +132,7 @@ public class AuthController {
             Long userId = dbRefreshToken.getUserId();
             String email = dbRefreshToken.getUser().getEmail();
 
-            String newToken = jwtService.generateToken(userId, email);
+            String newToken = jwtService.generateToken(userId, email, null);
             String newRefreshToken = jwtService.generateRefreshToken(userId, email);
             return ResponseEntity.ok(new RefreshTokenResource(newToken, newRefreshToken));
         }

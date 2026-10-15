@@ -10,9 +10,8 @@ import chandanv.local.chandanv.modules.users.entities.User;
 import chandanv.local.chandanv.modules.users.resources.UserResource;
 import chandanv.local.chandanv.modules.users.repositories.UserRepository;
 import org.springframework.web.bind.annotation.GetMapping;
-import chandanv.local.chandanv.resources.SuccessResource;
 import org.springframework.security.core.context.SecurityContextHolder;
-
+import chandanv.local.chandanv.resources.ApiResource;
 @RestController
 @RequestMapping("api/v1")
 public class UserController {
@@ -35,7 +34,7 @@ public class UserController {
                 .phone(user.getPhone()) 
                 .build();
 
-        SuccessResource<UserResource> response = new SuccessResource<>("SUCCESS", userResource);
+        ApiResource<UserResource> response = ApiResource.ok(userResource , "SUCCESS");
 
         logger.info("Success!");
         return ResponseEntity.ok(response);
