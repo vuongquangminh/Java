@@ -2,24 +2,30 @@ package chandanv.local.chandanv.modules.users.controllers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import chandanv.local.chandanv.modules.users.entities.UserCatalogue;
 import chandanv.local.chandanv.modules.users.requests.UserCatalogue.StoreRequest;
 import chandanv.local.chandanv.modules.users.requests.UserCatalogue.UpdateRequest;
 import chandanv.local.chandanv.modules.users.resources.UserCatalogueResource;
+import chandanv.local.chandanv.modules.users.services.impl.UserCatalogueService;
 import chandanv.local.chandanv.modules.users.services.interfaces.UserCatalogueServiceInterface;
-import org.springframework.validation.annotation.Validated;
 import chandanv.local.chandanv.resources.ApiResource;
-import org.springframework.web.bind.annotation.PathVariable;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
+import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
+import org.springframework.data.domain.Page;
+
 
 
 
@@ -35,6 +41,26 @@ public class UserCatalogueController {
 
     public UserCatalogueController(UserCatalogueServiceInterface userCatalogueService){
         this.userCatalogueService= userCatalogueService;
+    }
+
+    @GetMapping("/user_catalogues")
+    public ResponseEntity<?> index(HttpServletRequest request) {
+
+        Map<String, String[]> parameters = request.getParameterMap();
+
+        Page<UserCatalogue> userCatalogues = userCatalogueService.paginate(parameters);
+        Page<UserCatalogueResource> userCataloguesResource = userCatalogues.map(userCatalogue -> 
+            UserCatalogueResource.builder()
+                .id(userCatalogue.getId())
+                .name(userCatalogue.getName())
+                .publish(userCatalogue.getPublish())
+                .build()
+        );
+        ApiResource<Page<UserCatalogueResource>> response = ApiResource.ok(userCataloguesResource, "SUCCESS");
+
+
+        logger.info("Method index running....");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/user_catalogues")

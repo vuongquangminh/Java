@@ -11,7 +11,11 @@ import chandanv.local.chandanv.modules.users.repositories.UserCatalogueRepositor
 import org.springframework.transaction.annotation.Transactional;
 import chandanv.local.chandanv.modules.users.requests.UserCatalogue.UpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -20,6 +24,18 @@ public class UserCatalogueService  extends BaseService implements UserCatalogueS
 
     @Autowired
     private UserCatalogueRepository userCatalogueRepository;
+
+
+    @Override 
+    public Page<UserCatalogue> paginate(Map<String, String []> parameters){
+        int page = parameters.containsKey("page") ? Integer.parseInt(parameters.get("page")[0]) : 1;
+        int perPage = parameters.containsKey("perpage") ? Integer.parseInt(parameters.get("perpage")[0]) : 20;
+         String sortParam = parameters.containsKey("sort") ? parameters.get("sort")[0] : null;
+        Sort sort = createSort(sortParam);
+
+        Pageable pagable = PageRequest.of(page -1, perPage, sort);
+        return userCatalogueRepository.findAll(pagable);
+    }
 
 
     @Override
